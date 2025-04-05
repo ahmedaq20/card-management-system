@@ -37,7 +37,7 @@ class UserResource extends Resource
                         'user' => 'User',
                     ])
                     ->required(),
-                PasswordInput::make('password')->required()->hiddenOn('edit'),
+                    TextInput::make('password')->required()->hiddenOn('edit')->password(),
             ]);
     }
 

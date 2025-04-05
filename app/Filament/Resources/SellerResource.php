@@ -32,82 +32,19 @@ class SellerResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-
                 ->schema([
-
                     TextInput::make('name')->label('اسم البائع')->required(),
                     TextInput::make('sales_point')->label('نقطة البيع')->required(),
-                    TextInput::make('phone')->label('رقم الهاتف')->tel()->required()->columnSpan(2)->tel(),
-                    Grid::make(2)->schema([
-                        TextInput::make('cards_sold')
-                        ->label('عدد البطاقات')
-                        ->numeric()
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(function (Set $set, Get $get) {
-                            self::calculateRemainingDues($set, $get);
-                        }),
-
+                    TextInput::make('phone')->label('رقم الهاتف')->tel()->required()->tel(),
                     TextInput::make('wholesale_price')
-                        ->label('سعر الجملة')
-                        ->numeric()
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(function (Set $set, Get $get) {
-                            self::calculateRemainingDues($set, $get);
-                        }),
-
-                    TextInput::make('amount_paid')
-                        ->label('المبلغ المدفوع')
-                        ->numeric()
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                            self::calculateRemainingDues($set, $get);
-                        })
-                        ->rule(function (Get $get) {
-                            $total = floatval($get('cards_sold') ?? 0) * floatval($get('wholesale_price') ?? 0);
-                            $paid = floatval($get('amount_paid') ?? 0);
-
-                            if ($paid > $total) {
-                                return 'المبلغ المدفوع أكبر من المستحقات المالية';
-                            }
-                            return null;
-                        })
-                    ->helperText(function (Get $get) {
-                        $total = floatval($get('cards_sold') ?? 0) * floatval($get('wholesale_price') ?? 0);
-                        $paid = floatval($get('amount_paid') ?? 0);
-                        if ($paid > $total) {
-                            return '⚠️ تنبيه: المبلغ المدفوع أكبر من المستحقات المالية';
-                        }
-                        return null;
-                    }),
-
-                        TextInput::make('remaining_dues')
-                            ->label('المبلغ المتبقي')
-                            ->numeric()
-                            ->disabled() // حقل غير قابل للتعديل
-                            ->dehydrated()
-                            ->required(), // يتم حفظ القيمة في قاعدة البيانات
-                    ]),
+                    ->label('سعر الجملة')
+                    ->numeric()
+                    ->required(),
 
             ]);
 
     }
 
-        private static function calculateRemainingDues(Set $set, Get $get): void
-                  {
-        $soldCards = floatval($get('cards_sold') ?? 0);
-        $price = floatval($get('wholesale_price') ?? 0);
-        $paid = floatval($get('amount_paid') ?? 0);
-        $total = $soldCards * $price;
-
-        if ($paid <= $total) {
-            $set('remaining_dues', $total - $paid);
-        } else {
-            $set('remaining_dues', null);
-        }
-                  }
 
     public static function table(Table $table): Table
     {
