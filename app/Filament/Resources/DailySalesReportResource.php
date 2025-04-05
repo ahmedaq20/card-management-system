@@ -2,12 +2,19 @@
 
 namespace App\Filament\Resources;
 
+
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Seller;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
+use App\Models\DailySales;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use App\Models\DailySalesReport;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -16,14 +23,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Forms\Components\BelongsToSelect;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DailySalesReportResource\Pages;
 use App\Filament\Resources\DailySalesReportResource\RelationManagers;
 use App\Filament\Resources\DailySalesReportResource\Pages\EditDailySalesReport;
 use App\Filament\Resources\DailySalesReportResource\Pages\ListDailySalesReports;
 use App\Filament\Resources\DailySalesReportResource\Pages\CreateDailySalesReport;
-use App\Models\DailySales;
-use Filament\Forms\Components\Textarea;
 
 class DailySalesReportResource extends Resource
 {
@@ -33,57 +37,56 @@ class DailySalesReportResource extends Resource
 
     protected static ?string $navigationGroup = 'المبيعات اليومية';
     protected static ?string $navigationLabel = 'كشف المبيعات';
+
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
+        return $form->schema([
             BelongsToSelect::make('seller_id')
-            ->relationship('seller', 'name')
-            ->label('البائع')
-            ->searchable()
-            ->required(),
-            DatePicker::make('date')->label('التاريخ')->required(),
-            TextInput::make('sold_amount')->label('المبلغ المباع')->numeric()->required(),
-            TextInput::make('collected_amount')->label('المبلغ المحصل')->numeric()->required(),
-            TextInput::make('remaining')->label('المتبقي')->numeric()->required(),
+                ->relationship('seller', 'name')
+                ->label('البائع')
+                ->searchable()
+                ->required(),
+        
+            DatePicker::make('date')
+                ->label('التاريخ')
+                ->required()
+                ->default(Carbon::today()), // Set default to today's date
+        
+            TextInput::make('quantity_sold')
+                ->label('عدد البطاقات')
+                ->numeric()
+                ->required()
+                ->live(onBlur: true)
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    self::calculateTotalAmount($set, $get);
+                }),
+        
+            TextInput::make('unit_price')
+                ->label('سعر الوحدة')
+                ->default(function (Get $get) {
+                    $sellerId = $get('seller_id');
+                    if ($sellerId) {
+                        $seller = Seller::find($sellerId);
+                        return $seller ? $seller->unit_price : null; // جلب سعر الوحدة من جدول البائعين
+                    }
+                    return null;
+                })
+                ->disabled(), // تعيين سعر الوحدة بناءً على البائع
+        
+            TextInput::make('total_amount') // حقل المجموع
+                ->label('المجموع')
+                ->disabled() // لا يمكن تعديله
+                ->default(0), // القيمة الافتراضية للمجموع تكون 0
+        
+            TextInput::make('amount_paid')
+                ->label('المبلغ المحصل')
+                ->required(),
+        
             Textarea::make('notes')
-            ->label('الملاحظات')
-            ->placeholder('اكتب ملاحظاتك هنا...')
-            ->columnSpanFull()
-            ->rows(4),
-            /*
-             Grid::make(2)->schema([
-                TextInput::make('sold_cards')
-                    ->label('عدد البطاقات')
-                    ->numeric()
-                    ->required()
-                    ->live(), // لتحديث القيم مباشرة
-
-                TextInput::make('wholesale_price')
-                    ->label('سعر الجملة')
-                    ->numeric()
-                    ->required()
-                    ->live(),
-
-                TextInput::make('amount_paid')
-                    ->label('المبلغ المدفوع')
-                    ->numeric()
-                    ->required()
-                    ->live()
-                    ->afterStateUpdated(function (callable $set, callable $get) {
-                        $total = $get('sold_cards') * $get('wholesale_price');
-                        $remaining = $total - $get('amount_paid');
-                        $set('remaining_dues', $remaining);
-                    }),
-
-                TextInput::make('remaining_dues')
-                    ->label('المبلغ المتبقي')
-                    ->numeric()
-                    ->disabled(), // عدم التعديل عليه يدويًا
-            ]),
-        ]);
-            */
-
+                ->label('الملاحظات')
+                ->placeholder('اكتب ملاحظاتك هنا...')
+                ->columnSpanFull()
+                ->rows(4),
         ]);
     }
 
@@ -96,12 +99,6 @@ class DailySalesReportResource extends Resource
                 TextColumn::make('sold_amount')->label('المبلغ المباع'),
                 TextColumn::make('collected_amount')->label('المبلغ المحصل'),
                 TextColumn::make('remaining')->label('المتبقي'),
-                TextColumn::make('remaining')->label('المتبقي'),
-
-
-
-                // TextColumn::make('seller.name')->label('اسم البائع')->sortable()->searchable(),
-
             ])
             ->filters([
                 //
@@ -114,6 +111,15 @@ class DailySalesReportResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function calculateTotalAmount(Set $set, Get $get): void
+    {
+        $quantitySold = floatval($get('quantity_sold') ?? 0);
+        $unitPrice = floatval($get('unit_price') ?? 0);
+        $totalAmount = $quantitySold * $unitPrice; // حساب المجموع
+
+        $set('total_amount', $totalAmount); // تحديث حقل المجموع
     }
 
     public static function getRelations(): array

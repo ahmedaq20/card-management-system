@@ -13,16 +13,13 @@ return new class extends Migration
     {
         Schema::create('dailySales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade');
-            $table->date('date');
-            $table->string('sales_point');
-            $table->integer('quantity_sold');
-            $table->decimal('unit_price', 10, 2);
-            $table->decimal('total_amount', 10, 2);
-            $table->decimal('amount_paid', 10, 2);
-            $table->decimal('remaining_due', 10, 2);
-            $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade'); // علاقة مع جدول البائعين
+            $table->date('date'); // حقل التاريخ
+            $table->integer('quantity_sold'); // عدد البطاقات المباعة
+            $table->decimal('amount_paid', 10, 2); // المبلغ المحصل
+            $table->decimal('unit_price', 10, 2); // سعر الوحدة
+            $table->text('notes')->nullable(); // الملاحظات (اختياري)
+            $table->timestamps(); // تواريخ الإنشاء والتحديث
         });
     }
 
