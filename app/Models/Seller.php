@@ -18,8 +18,13 @@ class Seller extends Model
         return $this->belongsTo(User::class, 'admin_id');
     }
 
-    public function dailySalesReports()
+    // public function dailySalesReports()
+    // {
+    //     return $this->hasMany(DailySales::class, 'seller_id');
+    // }
+
+    public function dailySales()
     {
-        return $this->hasMany(DailySales::class, 'seller_id');
+        return $this->hasMany(DailySales::class); // علاقة مع جدول dailySales
     }
 }
