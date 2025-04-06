@@ -83,7 +83,7 @@ class SellerResource extends Resource
                 TextColumn::make('payments')
                 ->label('الدفعات')
                 ->counts('payments')
-                ->icon('heroicon-o-arrow-right')
+                ->icon('heroicon-o-currency-dollar')
                 ->tooltip('عرض الدفعات'),
                 
                 // TextColumn::make('view_payments')
