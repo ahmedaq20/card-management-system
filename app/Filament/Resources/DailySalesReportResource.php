@@ -18,6 +18,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\Layout\Grid;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -42,63 +43,78 @@ class DailySalesReportResource extends Resource
     {
         return $form->schema([
             BelongsToSelect::make('seller_id')
-                ->relationship('seller', 'name')
-                ->label('البائع')
-                ->searchable()
-                ->required(),
+            ->relationship('seller', 'name')
+            ->label('البائع')
+            ->searchable()
+            ->required()
+            ->live()
+            ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                $seller = Seller::find($state);
+                // dd($seller);
+                if ($seller) {
+                    $set('unit_price', $seller->wholesale_price);
         
-            DatePicker::make('date')
-                ->label('التاريخ')
-                ->required()
-                ->default(Carbon::today()), // Set default to today's date
-        
-            TextInput::make('quantity_sold')
-                ->label('عدد البطاقات')
-                ->numeric()
-                ->required()
-                ->live(onBlur: true)
-                ->afterStateUpdated(function (Set $set, Get $get) {
-                    self::calculateTotalAmount($set, $get);
-                }),
-        
-            TextInput::make('unit_price')
-                ->label('سعر الوحدة')
-                ->default(function (Get $get) {
-                    $sellerId = $get('seller_id');
-                    if ($sellerId) {
-                        $seller = Seller::find($sellerId);
-                        return $seller ? $seller->unit_price : null; // جلب سعر الوحدة من جدول البائعين
+                    // تحديث المجموع لو الكمية موجودة
+                    $qty = $get('quantity_sold');
+                    if ($qty) {
+                        $set('total_amount', $qty * $seller->wholesale_price);
                     }
-                    return null;
-                })
-                ->disabled(), // تعيين سعر الوحدة بناءً على البائع
+                }
+            }),
         
-            TextInput::make('total_amount') // حقل المجموع
-                ->label('المجموع')
-                ->disabled() // لا يمكن تعديله
-                ->default(0), // القيمة الافتراضية للمجموع تكون 0
+        DatePicker::make('date')
+            ->label('التاريخ')
+            ->required()
+            ->default(Carbon::today()),
+           
+        TextInput::make('quantity_sold')
+            ->label('عدد البطاقات')
+            ->numeric()
+            ->required()
+            ->live(onBlur: true)
+            ->afterStateUpdated(function (Set $set, Get $get) {
+                $qty = $get('quantity_sold');
+                $unitPrice = $get('unit_price');
+        
+                if ($qty && $unitPrice) {
+                    $set('total_amount', $qty * $unitPrice);
+                }
+            }),
+        
+        TextInput::make('unit_price')
+            ->label('سعر الوحدة')
+            ->numeric()
+            ->reactive()
+            ->disabled(), // فقط للعرض
         
             TextInput::make('amount_paid')
-                ->label('المبلغ المحصل')
-                ->required(),
+            ->label('المبلغ المحصل')
+            ->required(),
         
-            Textarea::make('notes')
-                ->label('الملاحظات')
-                ->placeholder('اكتب ملاحظاتك هنا...')
-                ->columnSpanFull()
-                ->rows(4),
-        ]);
+        TextInput::make('total_amount')
+            ->label('المجموع')
+            ->disabled()
+            ->default(0),
+        
+        
+        Textarea::make('notes')
+            ->label('الملاحظات')
+            ->placeholder('اكتب ملاحظاتك هنا...')
+            ->columnSpanFull()
+            ->rows(4)
+        ]);        
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('date')->label('التاريخ')->sortable(),
-                TextColumn::make('seller.name')->label('اسم البائع')->sortable()->searchable(),
-                TextColumn::make('sold_amount')->label('المبلغ المباع'),
-                TextColumn::make('collected_amount')->label('المبلغ المحصل'),
-                TextColumn::make('remaining')->label('المتبقي'),
+                // TextColumn::make('date')->label('التاريخ')->sortable(),
+                TextColumn::make('seller.name')->label('اسم البائع')->searchable(),
+                TextColumn::make('quantity_sold')->label('عدد البطاقات')->sortable(),
+                TextColumn::make('amount_paid')->label('المبلغ المحصل'),
+                TextColumn::make('notes')->label('الملاحظات')->limit(50),
+                TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime()->sortable(),
             ])
             ->filters([
                 //

@@ -32,9 +32,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Sky,
             ])
             // ->brandName('MA app')
-            ->brandLogo(asset('images/logo2.png'))
+            ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('2rem')
-            ->favicon(asset('images/logo2.png'))
+            ->favicon(asset('images/logo.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -59,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
-            
-            
+
+
     }
 }

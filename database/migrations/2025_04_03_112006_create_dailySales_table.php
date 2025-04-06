@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('date'); // حقل التاريخ
             $table->integer('quantity_sold'); // عدد البطاقات المباعة
             $table->decimal('amount_paid', 10, 2); // المبلغ المحصل
-            $table->decimal('unit_price', 10, 2); // سعر الوحدة
+            // $table->decimal('unit_price', 10, 2); // سعر الوحدة
             $table->text('notes')->nullable(); // الملاحظات (اختياري)
             $table->timestamps(); // تواريخ الإنشاء والتحديث
         });
