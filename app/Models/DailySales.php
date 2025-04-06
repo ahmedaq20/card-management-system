@@ -10,7 +10,7 @@ class DailySales extends Model
     protected $table = 'dailySales';
 
     protected $fillable = [
-        'date', 'seller_id', 'sold_amount', 'collected_amount', 'remaining'
+        'date', 'seller_id', 'quantity_sold', 'amount_paid', 'notes',
     ];
 
     public function seller()

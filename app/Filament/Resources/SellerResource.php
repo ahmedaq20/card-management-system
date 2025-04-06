@@ -50,15 +50,52 @@ class SellerResource extends Resource
     {
         return $table
             ->columns([
+            // TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
+            // TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
+            // TextColumn::make('phone')->label('رقم الهاتف'),
+            // TextColumn::make('dailySales_sum_quantity_sold')
+            // ->label('إجمالي البطاقات المباعة')
+            // // ->counts('dailySales')
+            // ->sum('dailySales', 'quantity_sold'),
+            // TextColumn::make('amount_paid')->label('المبلغ المدفوع'),
+            // TextColumn::make('remaining_dues')->label('باقي المستحقات'),
+            // TextColumn::make('payments')->label('الدفعات'),
+            // TextColumn::make('wholesale_price')->label('سعر الجملة'),
+
             TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
+
             TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
+
             TextColumn::make('phone')->label('رقم الهاتف'),
-            TextColumn::make('cards_sold')->label('البطاقات المباعة'),
-            TextColumn::make('amount_paid')->label('المبلغ المدفوع'),
-            TextColumn::make('remaining_dues')->label('باقي المستحقات'),
+
+      
+                TextColumn::make('daily_sales.quantity_sold')
+                ->label('إجمالي البطاقات المباعة')
+                ->getStateUsing(function ($record) {
+                    return $record->dailySales->sum('quantity_sold');
+                }),
+
+                TextColumn::make('daily_sales.amount_paid')
+                ->label('إجمالي المبلغ المحصل')
+                ->getStateUsing(function ($record) {
+                    return $record->dailySales->sum('amount_paid');
+                }),
+            TextColumn::make('remaining_dues_total')
+                ->label('باقي المستحقات')
+                ->getStateUsing(function ($record) {
+                    $total = $record->dailySales->sum(function ($sale) {
+                        return $sale->quantity_sold * $sale->unit_price;
+                    });
+
+                    $paid = $record->dailySales->sum('amount_paid');
+                    return $total - $paid;
+                }),
+
             TextColumn::make('payments')->label('الدفعات'),
+
             TextColumn::make('wholesale_price')->label('سعر الجملة'),
 
+            
 
 
             ])
