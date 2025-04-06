@@ -27,4 +27,11 @@ class Seller extends Model
     {
         return $this->hasMany(DailySales::class); // علاقة مع جدول dailySales
     }
+
+
+    public function payments()
+    {
+        return $this->hasMany(FinancialPayment::class);
+    }
+
 }

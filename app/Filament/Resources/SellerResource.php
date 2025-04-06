@@ -5,8 +5,11 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Seller;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\FinancialPayment;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Textarea;
@@ -16,9 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use App\Filament\Resources\SellerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\FinancialPaymentResource;
 use App\Filament\Resources\SellerResource\RelationManagers;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 
 class SellerResource extends Resource
 {
@@ -50,20 +52,8 @@ class SellerResource extends Resource
     {
         return $table
             ->columns([
-            // TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
-            // TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
-            // TextColumn::make('phone')->label('رقم الهاتف'),
-            // TextColumn::make('dailySales_sum_quantity_sold')
-            // ->label('إجمالي البطاقات المباعة')
-            // // ->counts('dailySales')
-            // ->sum('dailySales', 'quantity_sold'),
-            // TextColumn::make('amount_paid')->label('المبلغ المدفوع'),
-            // TextColumn::make('remaining_dues')->label('باقي المستحقات'),
-            // TextColumn::make('payments')->label('الدفعات'),
-            // TextColumn::make('wholesale_price')->label('سعر الجملة'),
-
+            TextColumn::make('id')->label('رقم البائع')->sortable()->searchable(),
             TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
-
             TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
 
             TextColumn::make('phone')->label('رقم الهاتف'),
@@ -80,21 +70,33 @@ class SellerResource extends Resource
                 ->getStateUsing(function ($record) {
                     return $record->dailySales->sum('amount_paid');
                 }),
-            TextColumn::make('remaining_dues_total')
+                TextColumn::make('remaining_dues_total')
                 ->label('باقي المستحقات')
                 ->getStateUsing(function ($record) {
-                    $total = $record->dailySales->sum(function ($sale) {
-                        return $sale->quantity_sold * $sale->unit_price;
-                    });
-
-                    $paid = $record->dailySales->sum('amount_paid');
-                    return $total - $paid;
+                    $totalQuantitySold = $record->dailySales->sum('quantity_sold');
+                    $wholesalePrice = $record->wholesale_price;
+                    $totalAmountPaid = $record->dailySales->sum('amount_paid');
+            
+                    return ($totalQuantitySold * $wholesalePrice) - $totalAmountPaid;
                 }),
 
-            TextColumn::make('payments')->label('الدفعات'),
+                TextColumn::make('payments')
+                ->label('الدفعات')
+                ->counts('payments')
+                ->icon('heroicon-o-arrow-right')
+                ->tooltip('عرض الدفعات'),
+                
+                // TextColumn::make('view_payments')
+                // ->label('عرض الدفعات')
+                // ->url(fn ($record) => route('filament.resources.sellers.edit', ['record' => $record->id]) . '#payments')
+                // ->icon('heroicon-o-eye')
+                // ->color('primary')
+                // ->tooltip('عرض الدفعات'),
 
-            TextColumn::make('wholesale_price')->label('سعر الجملة'),
-
+                TextColumn::make('wholesale_price')
+                ->label('سعر الجملة')
+                ->badge()
+                ->color('success'),
             
 
 
@@ -118,7 +120,8 @@ class SellerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PaymentsRelationManager::class,
+
         ];
     }
 
