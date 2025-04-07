@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class PaymentsRelationManager extends RelationManager
 {    protected static ?string $recordTitleAttribute = 'amount';
     protected static ?string $label = 'المدفوعات';
+    
     protected static string $relationship = 'payments';
 
     public function form(Form $form): Form
@@ -39,7 +40,16 @@ class PaymentsRelationManager extends RelationManager
               
                     TextColumn::make('id')->label('رقم الدفعة')->sortable(),
                     TextColumn::make('amount')->label('المبلغ')->sortable(),
-                    TextColumn::make('description')->label('الوصف'),
+                    TextColumn::make('with_cards') // Use the accessor
+                    ->label('نوع الدفعة')
+                    ->badge()
+                    ->colors([
+                        'success' => fn ($state) => $state === 'مع بطاقات', // Green badge for "مع بطاقات"
+                        'danger' => fn ($state) => $state === 'بدون بطاقات', // Red badge for "بدون بطاقات"
+                    ]),
+                    TextColumn::make('description')
+                    ->label('الوصف')
+                    ->formatStateUsing(fn ($state) => $state ?? 'لا يوجد وصف'),
                     TextColumn::make('created_at')->label('تاريخ الإضافة')->dateTime(),
             ])
             ->filters([
