@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use App\Models\DailySalesReport;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -39,12 +40,17 @@ class DailySalesReportResource extends Resource
     protected static ?string $navigationGroup = 'المبيعات اليومية';
     protected static ?string $navigationLabel = 'كشف المبيعات';
 
+    protected static ?string  $breadcrumb = 'كشف المبيعات';
+    protected static ?string  $label = 'كشف المبيعات';
+    
+    
     public static function form(Form $form): Form
     {
         return $form->schema([
-            BelongsToSelect::make('seller_id')
-            ->relationship('seller', 'name')
+
+            Select::make('seller_id')
             ->label('البائع')
+            ->options(Seller::all()->pluck('name','id'))
             ->searchable()
             ->required()
             ->live()
@@ -53,7 +59,7 @@ class DailySalesReportResource extends Resource
                 // dd($seller);
                 if ($seller) {
                     $set('unit_price', $seller->wholesale_price);
-        
+
                     // تحديث المجموع لو الكمية موجودة
                     $qty = $get('quantity_sold');
                     if ($qty) {
@@ -61,12 +67,31 @@ class DailySalesReportResource extends Resource
                     }
                 }
             }),
-        
+            // BelongsToSelect::make('seller_id')
+            // ->relationship('seller', 'name')
+            // ->label('البائع')
+            // ->searchable()
+            // ->required()
+            // ->live()
+            // ->afterStateUpdated(function (Set $set, Get $get, $state) {
+            //     $seller = Seller::find($state);
+            //     // dd($seller);
+            //     if ($seller) {
+            //         $set('unit_price', $seller->wholesale_price);
+
+            //         // تحديث المجموع لو الكمية موجودة
+            //         $qty = $get('quantity_sold');
+            //         if ($qty) {
+            //             $set('total_amount', $qty * $seller->wholesale_price);
+            //         }
+            //     }
+            // }),
+
         DatePicker::make('date')
             ->label('التاريخ')
             ->required()
             ->default(Carbon::today()),
-           
+
         TextInput::make('quantity_sold')
             ->label('عدد البطاقات')
             ->numeric()
@@ -75,34 +100,34 @@ class DailySalesReportResource extends Resource
             ->afterStateUpdated(function (Set $set, Get $get) {
                 $qty = $get('quantity_sold');
                 $unitPrice = $get('unit_price');
-        
+
                 if ($qty && $unitPrice) {
                     $set('total_amount', $qty * $unitPrice);
                 }
             }),
-        
+
         TextInput::make('unit_price')
             ->label('سعر الوحدة')
             ->numeric()
             ->reactive()
             ->disabled(), // فقط للعرض
-        
+
             TextInput::make('amount_paid')
             ->label('المبلغ المحصل')
             ->required(),
-        
+
         TextInput::make('total_amount')
             ->label('المجموع')
             ->disabled()
             ->default(0),
-        
-        
+
+
         Textarea::make('notes')
             ->label('الملاحظات')
             ->placeholder('اكتب ملاحظاتك هنا...')
             ->columnSpanFull()
             ->rows(4)
-        ]);        
+        ]);
     }
 
     public static function table(Table $table): Table

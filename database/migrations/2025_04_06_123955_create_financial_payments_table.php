@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('seller_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->string('description')->nullable();
+            $table->boolean('with_cards')->default(0);
             $table->timestamps();
         });
     }
