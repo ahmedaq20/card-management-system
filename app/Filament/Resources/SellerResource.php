@@ -58,7 +58,7 @@ class SellerResource extends Resource
 
             TextColumn::make('phone')->label('رقم الهاتف'),
 
-      
+
                 TextColumn::make('daily_sales.quantity_sold')
                 ->label('إجمالي البطاقات المباعة')
                 ->getStateUsing(function ($record) {
@@ -68,16 +68,22 @@ class SellerResource extends Resource
                 TextColumn::make('daily_sales.amount_paid')
                 ->label('إجمالي المبلغ المحصل')
                 ->getStateUsing(function ($record) {
-                    return $record->dailySales->sum('amount_paid');
+                    $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
+                    return  (int    )$totalPayments;
+
                 }),
                 TextColumn::make('remaining_dues_total')
                 ->label('باقي المستحقات')
                 ->getStateUsing(function ($record) {
+                    $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
+                
                     $totalQuantitySold = $record->dailySales->sum('quantity_sold');
                     $wholesalePrice = $record->wholesale_price;
-                    $totalAmountPaid = $record->dailySales->sum('amount_paid');
-            
-                    return ($totalQuantitySold * $wholesalePrice) - $totalAmountPaid;
+
+                    if($totalQuantitySold > 0){
+                        return ($totalQuantitySold * $wholesalePrice) - $totalPayments;
+                    }
+                    return 0;
                 }),
 
                 TextColumn::make('payments')
@@ -85,7 +91,7 @@ class SellerResource extends Resource
                 ->counts('payments')
                 ->icon('heroicon-o-currency-dollar')
                 ->tooltip('عرض الدفعات'),
-                
+
                 // TextColumn::make('view_payments')
                 // ->label('عرض الدفعات')
                 // ->url(fn ($record) => route('filament.resources.sellers.edit', ['record' => $record->id]) . '#payments')
@@ -97,7 +103,7 @@ class SellerResource extends Resource
                 ->label('سعر الجملة')
                 ->badge()
                 ->color('success'),
-            
+
 
 
             ])
