@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SellerResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
+use Tables\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -53,7 +54,18 @@ class PaymentsRelationManager extends RelationManager
                     TextColumn::make('created_at')->label('تاريخ الإضافة')->dateTime(),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('all')
+                ->label('الكل')
+                ->query(fn (Builder $query) => $query), // No filtering, show all records
+
+            Tables\Filters\Filter::make('with_cards')
+                ->label('مع بطاقات')
+                ->query(fn (Builder $query) => $query->where('with_cards', 1)),
+
+            Tables\Filters\Filter::make('without_cards')
+                ->label('بدون بطاقات')
+                ->query(fn (Builder $query) => $query->where('with_cards', 0)),
+                
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

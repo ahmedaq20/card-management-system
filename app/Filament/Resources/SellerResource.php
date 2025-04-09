@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Pages\ViewSeller;
 use App\Models\Seller;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -31,6 +32,10 @@ class SellerResource extends Resource
     protected static ?string $navigationGroup = 'البائعين';
     protected static ?string $navigationLabel = 'البائعين';
 
+    protected static ?string  $breadcrumb = 'البائعين';
+    // protected static ?string  $label = 'سجل البائعين';
+    protected static ?string  $pluralLabel = 'سجل البائعين';
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -69,7 +74,7 @@ class SellerResource extends Resource
                 ->label('إجمالي المبلغ المحصل')
                 ->getStateUsing(function ($record) {
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
-                    return  (int    )$totalPayments;
+                    return  (int)$totalPayments;
 
                 }),
                 TextColumn::make('remaining_dues_total')
@@ -137,6 +142,7 @@ class SellerResource extends Resource
             'index' => Pages\ListSellers::route('/'),
             'create' => Pages\CreateSeller::route('/create'),
             'edit' => Pages\EditSeller::route('/{record}/edit'),
+
         ];
     }
 }
