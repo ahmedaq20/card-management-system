@@ -28,6 +28,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(CustomLogin::class)
+            ->widgets([
+                \App\Filament\Widgets\UserStatsWidget::class, // Add your widget here
+            ])
             ->sidebarCollapsibleOnDesktop(true) // optional
             ->colors([
                 // 'primary' => Color::Amber,
