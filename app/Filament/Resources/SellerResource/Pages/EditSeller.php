@@ -19,18 +19,5 @@ class EditSeller extends EditRecord
         ];
     }
 
-    public function getTabs():array{
-
-        return [
-
-            'All' =>Tab::make(),
-            'with Cards' =>Tab::make()->modifyQueryUsing(function($query){
-                $query->where('with_cards',1);
-            }),
-            'without Cards' =>Tab::make()->modifyQueryUsing(function($query){
-                $query->where('with_cards',0);
-            }),
-        ];
-
-    }
+    
 }
