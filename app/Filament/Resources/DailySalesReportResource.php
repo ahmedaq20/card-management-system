@@ -13,6 +13,7 @@ use App\Models\DailySales;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use App\Models\DailySalesReport;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -22,6 +23,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Forms\Components\BelongsToSelect;
@@ -40,8 +42,10 @@ class DailySalesReportResource extends Resource
     protected static ?string $navigationGroup = 'المبيعات اليومية';
     protected static ?string $navigationLabel = 'كشف المبيعات';
 
-    protected static ?string  $breadcrumb = 'كشف المبيعات';
-    protected static ?string  $label = 'كشف المبيعات';
+    protected static ?string  $breadcrumb = ' المبيعات اليومية';
+    // protected static ?string  $label = 'كشف المبيعات';
+    protected static ?string  $pluralLabel = 'كشف  البيعات';
+
     
     
     public static function form(Form $form): Form
@@ -152,7 +156,23 @@ class DailySalesReportResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
+        }
+
+
+        // public static function infolist(Infolist $infolist): Infolist
+        // {
+        //     return $infolist
+        //         ->schema([
+        //     TextEntry::make('name')->label('اسم البائع'),
+        //     TextEntry::make('sales_point')->label('نقطة البيع'),
+        //     TextEntry::make('phone')->label('رقم الهاتف'),
+        //     TextEntry::make('wholesale_price')->label('سعر الجملة'),
+        //     TextEntry::make('cards_sold')->label('البطاقات المباعة'),
+        //     TextEntry::make('amount_paid')->label('المبلغ المدفوع'),
+        //     TextEntry::make('remaining_dues')->label('باقي المستحقات'),
+        //     TextEntry::make('payments')->label('الدفعات'),
+        //         ]);
+        // }
 
     private static function calculateTotalAmount(Set $set, Get $get): void
     {
