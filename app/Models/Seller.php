@@ -12,6 +12,22 @@ class Seller extends Model
         'wholesale_price',
     ];
 
+    public function updateFinancialData()
+{
+    $totalCardsSold = $this->dailySales()->sum('quantity_sold'); // حسب اسم العمود عندك
+    $totalAmountPaid = $this->payments()->sum('amount');
+    $wholesalePrice = $this->wholesale_price ?? 0;
+
+    $expectedAmount = $totalCardsSold * $wholesalePrice;
+    $remainingDues = $expectedAmount - $totalAmountPaid;
+
+    $this->update([
+        'cards_sold' => $totalCardsSold,
+        'amount_paid' => $totalAmountPaid,
+        'remaining_dues' => $remainingDues,
+        'payments' => $this->payments()->sum('amount'), // أو شيء آخر حسب ما تريده
+    ]);
+}
 
     public function admin()
     {
