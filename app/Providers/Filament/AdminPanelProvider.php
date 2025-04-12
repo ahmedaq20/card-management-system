@@ -8,6 +8,7 @@ use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\CustomLogin;
 use Filament\Support\Colors\Color;
+use App\Filament\Widgets\ClientsTable;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Widgets\MonthlyPaymentsTable;
 use Illuminate\Session\Middleware\StartSession;
@@ -31,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(CustomLogin::class)
             ->widgets([
                 \App\Filament\Widgets\UserStatsWidget::class, 
-                
+                ClientsTable::class,
                 // Add your widget here
             ])
             ->sidebarCollapsibleOnDesktop(true) // optional
