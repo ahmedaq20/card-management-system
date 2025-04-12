@@ -9,6 +9,7 @@ use Filament\PanelProvider;
 use App\Filament\Auth\CustomLogin;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use App\Filament\Widgets\MonthlyPaymentsTable;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -29,7 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(CustomLogin::class)
             ->widgets([
-                \App\Filament\Widgets\UserStatsWidget::class, // Add your widget here
+                \App\Filament\Widgets\UserStatsWidget::class, 
+                
+                // Add your widget here
             ])
             ->sidebarCollapsibleOnDesktop(true) // optional
             ->colors([

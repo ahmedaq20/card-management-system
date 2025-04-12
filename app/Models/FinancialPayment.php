@@ -14,7 +14,8 @@ class FinancialPayment extends Model
         'seller_id',
         'amount',
         'description',
-        'with_cards'
+        'with_cards',
+        'created_at'
     ];
 
        // Accessor for with_cards attribute
