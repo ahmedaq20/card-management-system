@@ -8,19 +8,38 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-
+use RouterOS\Query;
+use RouterOS\Client;
 
 class UserStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        return [
-            Stat::make('اجمال البائعين', Seller::count())
-                ->description('عدد البائعين في النظام')
-                ->descriptionIcon('heroicon-o-user',IconPosition::Before)
-                ->chart([20,16,12,10,7,5,3,1])
-                ->color('success'),
+        // الاتصال بـ MikroTik
+        $client = new Client([
+            'host' => env('MIKROTIK_HOST'),
+            'user' => env('MIKROTIK_USERNAME'),
+            'pass' => env('MIKROTIK_PASSWORD'),
+            'port' =>(int) env('MIKROTIK_PORT',50001),
+        ]);
 
+        // استعلام المستخدمين النشطين
+        $query = new Query('/ip/hotspot/active/print');
+        $activeUsers = $client->query($query)->read();
+
+        // حساب عددهم
+        $activeUserCount = count($activeUsers);
+        return [
+            // Stat::make('اجمال البائعين', Seller::count())
+            //     ->description('عدد البائعين في النظام')
+            //     ->descriptionIcon('heroicon-o-user',IconPosition::Before)
+            //     ->chart([20,16,12,10,7,5,3,1])
+            //     ->color('success'),
+            // Clients From API
+            Stat::make('العملاء النشطين', $activeUserCount)
+            ->description('عدد العملاء المتصلين عبر MikroTik')
+            ->descriptionIcon('heroicon-o-wifi')
+            ->color('success'),
 
             Stat::make('البطاقات المباعة', Seller::sum('cards_sold'))
             ->description('اجمال البطاقات المباعة في النظام')
@@ -35,5 +54,10 @@ class UserStatsWidget extends BaseWidget
             ->color(Color::Sky),
         ];
 
+    }
+
+    protected function getPollingInterval(): ?string
+    {
+        return '10s';
     }
 }

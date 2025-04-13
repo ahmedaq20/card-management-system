@@ -32,8 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(CustomLogin::class)
             ->widgets([
                 \App\Filament\Widgets\UserStatsWidget::class, 
-                ClientsTable::class,
-                // Add your widget here
+         
             ])
             ->sidebarCollapsibleOnDesktop(true) // optional
             ->colors([
