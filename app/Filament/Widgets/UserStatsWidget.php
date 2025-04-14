@@ -38,7 +38,8 @@ class UserStatsWidget extends BaseWidget
             // Clients From API
             Stat::make('العملاء النشطين', $activeUserCount)
             ->description('عدد العملاء المتصلين عبر MikroTik')
-            ->descriptionIcon('heroicon-o-wifi')
+            ->descriptionIcon('heroicon-o-wifi',IconPosition::Before)
+            ->chart([100, 250, 300, 500, 700])
             ->color('success'),
 
             Stat::make('البطاقات المباعة', Seller::sum('cards_sold'))
