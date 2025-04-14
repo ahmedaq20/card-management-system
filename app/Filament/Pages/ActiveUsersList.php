@@ -10,8 +10,9 @@ class ActiveUsersList extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-wifi';
     protected static ?string $navigationGroup = 'شبكة الميكروتك';
+    //protected static ?string $title = 'شبكة الميكروتك';
 
-    // protected static ?string $title = 'قائمة المستخدمين النشطين';
+     protected static ?string $title = 'قائمة المستخدمين النشطين';
     //  protected static ?string $title='s';
     protected static string $view = 'filament.pages.active-users-list';
 
@@ -40,11 +41,11 @@ class ActiveUsersList extends Page
 
     }
 
-    public function getTitle(): string 
+    public function getTitle(): string
     {
         return static::$title ?? '';
     }
 
-    
-  
+
+
 }
