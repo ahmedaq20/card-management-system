@@ -33,7 +33,7 @@
     </div>
 
         {{-- ✅ محتوى الجدول --}}
-        <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 mt-4">
+        <div class="overflow-x-auto  rounded-xl border border-gray-200 dark:border-gray-700 mt-4">
             <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
@@ -55,7 +55,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-600" fill="green" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.707 7.293a1 1 0 00-1.414-1.414L11 12.172 8.707 9.879a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l5-5z" clip-rule="evenodd" />
                                         </svg>
-                                        
+
                                     </span>
                                 @else
                                     <span  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -63,7 +63,7 @@
                                         <svg  xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red" fill="red" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M12 2a10 10 0 100 20 10 10 0 000-20zM9.293 9.293a1 1 0 011.414 0L12 10.586l1.293-1.293a1 1 0 111.414 1.414L13.414 12l1.293 1.293a1 1 0 01-1.414 1.414L12 13.414l-1.293 1.293a1 1 0 01-1.414-1.414L10.586 12 9.293 10.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                                         </svg>
-                                        
+
                                     </span>
                                 @endif
                             </td>
@@ -74,7 +74,7 @@
                             <td class="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200">{{ $user['mac-address'] ?? '-' }}</td>
                             <td class="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200">{{ $user['uptime'] ?? '-' }}</td>
 
-                                   
+
                         </tr>
                     @empty
                         <tr>
