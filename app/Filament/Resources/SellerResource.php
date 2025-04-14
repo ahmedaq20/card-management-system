@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use stdClass;
 use Filament\Forms;
 use Filament\Tables;
 use Pages\ViewSeller;
@@ -14,7 +15,9 @@ use App\Models\FinancialPayment;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
@@ -35,7 +38,7 @@ class SellerResource extends Resource
     protected static ?string  $breadcrumb = 'البائعين';
     // protected static ?string  $label = 'سجل البائعين';
     protected static ?string  $pluralLabel = 'سجل البائعين';
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -57,13 +60,20 @@ class SellerResource extends Resource
     {
         return $table
             ->columns([
-            TextColumn::make('id')->label('رقم البائع')->sortable()->searchable(),
-            TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
-            TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
-
-            TextColumn::make('phone')->label('رقم الهاتف'),
-
-
+                TextColumn::make('#')->state(
+                    static function (HasTable $livewire, stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
+                // TextColumn::make('id')->label('رقم البائع')->sortable()->searchable(),
+                TextColumn::make('name')->sortable()->searchable()->label('اسم البائع'),
+                TextColumn::make('sales_point')->sortable()->searchable()->label('نقطة البيع'),
+                TextColumn::make('phone')->label('رقم الهاتف'),
                 TextColumn::make('daily_sales.quantity_sold')
                 ->label('إجمالي البطاقات المباعة')
                 ->getStateUsing(function ($record) {
@@ -81,7 +91,7 @@ class SellerResource extends Resource
                 ->label('باقي المستحقات')
                 ->getStateUsing(function ($record) {
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
-                
+
                     $totalQuantitySold = $record->dailySales->sum('quantity_sold');
                     $wholesalePrice = $record->wholesale_price;
 
