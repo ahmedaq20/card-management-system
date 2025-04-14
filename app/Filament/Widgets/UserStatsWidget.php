@@ -2,21 +2,26 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\FinancialPayment;
+use RouterOS\Query;
+use RouterOS\Client;
 use App\Models\Seller;
+use PHPUnit\Exception;
+use App\Models\FinancialPayment;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Log;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use RouterOS\Query;
-use RouterOS\Client;
 
 class UserStatsWidget extends BaseWidget
 {
+
     protected function getStats(): array
     {
-        // الاتصال بـ MikroTik
-        $client = new Client([
+        $activeUsersCount = 0;
+        try {
+           // الاتصال بـ MikroTik
+          $client = new Client([
             'host' => env('MIKROTIK_HOST'),
             'user' => env('MIKROTIK_USERNAME'),
             'pass' => env('MIKROTIK_PASSWORD'),
@@ -29,6 +34,13 @@ class UserStatsWidget extends BaseWidget
 
         // حساب عددهم
         $activeUserCount = count($activeUsers);
+          }
+          catch(\Throwable $e) {
+            $activeUsersCount = 0;
+            Log::error('MikroTik connection or query failed: ' . $e->getMessage());
+
+          }
+    
         return [
             // Stat::make('اجمال البائعين', Seller::count())
             //     ->description('عدد البائعين في النظام')
