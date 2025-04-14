@@ -18,7 +18,7 @@ class UserStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $activeUsersCount = 0;
+        $activeUserCount = 0;
         try {
            // الاتصال بـ MikroTik
           $client = new Client([
@@ -36,7 +36,7 @@ class UserStatsWidget extends BaseWidget
         $activeUserCount = count($activeUsers);
           }
           catch(\Throwable $e) {
-            $activeUsersCount = 0;
+            $activeUserCount = 0;
             Log::error('MikroTik connection or query failed: ' . $e->getMessage());
 
           }
