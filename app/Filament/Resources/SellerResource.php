@@ -82,6 +82,7 @@ class SellerResource extends Resource
 
                 TextColumn::make('daily_sales.amount_paid')
                 ->label('إجمالي المبلغ المحصل')
+                ->money('ILS')
                 ->getStateUsing(function ($record) {
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
                     return  (int)$totalPayments;
@@ -89,7 +90,9 @@ class SellerResource extends Resource
                 }),
                 TextColumn::make('remaining_dues_total')
                 ->label('باقي المستحقات')
+                ->money('ILS')
                 ->getStateUsing(function ($record) {
+
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
 
                     $totalQuantitySold = $record->dailySales->sum('quantity_sold');
@@ -97,6 +100,8 @@ class SellerResource extends Resource
 
                     if($totalQuantitySold > 0){
                         return ($totalQuantitySold * $wholesalePrice) - $totalPayments;
+                    }elseif($totalQuantitySold == 0){
+                        return  $totalPayments;
                     }
                     return 0;
                 }),
@@ -104,7 +109,8 @@ class SellerResource extends Resource
                 TextColumn::make('payments')
                 ->label('الدفعات')
                 ->counts('payments')
-                ->icon('heroicon-o-currency-dollar')
+                // ->icon('heroicon-o-currency-dollar')
+                ->money('ILS')
                 ->tooltip('عرض الدفعات'),
 
                 // TextColumn::make('view_payments')
@@ -116,6 +122,7 @@ class SellerResource extends Resource
 
                 TextColumn::make('wholesale_price')
                 ->label('سعر الجملة')
+                ->money('ILS')
                 ->badge()
                 ->color('success'),
 
