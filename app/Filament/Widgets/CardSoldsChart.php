@@ -12,13 +12,13 @@ class CardSoldsChart extends ChartWidget
     protected function getData(): array
     {
         // Fetch the number of cards sold per day over the last 30 days
-        $data = DB::table('dailysales')
+        $data = DB::table('dailySales')
             ->selectRaw('DATE(updated_at) as date, SUM(quantity_sold) as total_quantity_sold')
             ->where('updated_at', '>=', now()->subDays(30))
             ->groupByRaw('DATE(updated_at)') // Use DATE(updated_at) in GROUP BY
             ->orderBy('date')
             ->get();
-
+            
         // Prepare the data (totals)
         $totals = $data->pluck('total_quantity_sold')->toArray();
 
