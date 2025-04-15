@@ -76,13 +76,15 @@ class SellerResource extends Resource
                 TextColumn::make('phone')->label('رقم الهاتف'),
                 TextColumn::make('daily_sales.quantity_sold')
                 ->label('إجمالي البطاقات المباعة')
+                ->alignCenter()
                 ->getStateUsing(function ($record) {
                     return $record->dailySales->sum('quantity_sold');
                 }),
 
                 TextColumn::make('daily_sales.amount_paid')
                 ->label('إجمالي المبلغ المحصل')
-                ->money('ILS')
+                ->alignCenter()
+                    ->formatStateUsing(fn ($state) => number_format($state) . ' ₪') 
                 ->getStateUsing(function ($record) {
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
                     return  (int)$totalPayments;
@@ -90,7 +92,8 @@ class SellerResource extends Resource
                 }),
                 TextColumn::make('remaining_dues_total')
                 ->label('باقي المستحقات')
-                ->money('ILS')
+                ->alignCenter()
+                    ->formatStateUsing(fn ($state) => number_format($state) . ' ₪') 
                 ->getStateUsing(function ($record) {
 
                     $totalPayments= FinancialPayment::where('seller_id',$record->id)->sum('amount');
@@ -110,7 +113,8 @@ class SellerResource extends Resource
                 ->label('الدفعات')
                 ->counts('payments')
                 // ->icon('heroicon-o-currency-dollar')
-                ->money('ILS')
+                    ->formatStateUsing(fn ($state) => number_format($state) . ' ₪') 
+                    ->alignCenter()
                 ->tooltip('عرض الدفعات'),
 
                 // TextColumn::make('view_payments')
@@ -122,8 +126,10 @@ class SellerResource extends Resource
 
                 TextColumn::make('wholesale_price')
                 ->label('سعر الجملة')
-                ->money('ILS')
+                
+                    ->formatStateUsing(fn ($state) => number_format($state) . ' ₪') 
                 ->badge()
+                ->alignCenter()
                 ->color('success'),
 
 

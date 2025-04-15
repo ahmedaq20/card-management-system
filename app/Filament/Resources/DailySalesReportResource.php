@@ -118,6 +118,7 @@ class DailySalesReportResource extends Resource
 
             TextInput::make('amount_paid')
             ->label('المبلغ المحصل')
+            ->default(0)
             ->required(),
 
         TextInput::make('total_amount')
