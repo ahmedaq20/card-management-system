@@ -144,8 +144,10 @@ class DailySalesReportResource extends Resource
                 TextColumn::make('amount_paid')->label('المبلغ المحصل'),
                 TextColumn::make('notes')->label('الملاحظات')->limit(50),
                 TextColumn::make('date')->label('تاريخ الإنشاء')->sortable(),
+                
                 // TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime()->sortable(),
             ])
+            ->defaultSort('date', 'desc') // ترتيب حسب التاريخ تنازلياً (الأحدث أولاً)
             ->filters([
                 //
             ])
