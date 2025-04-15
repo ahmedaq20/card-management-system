@@ -93,8 +93,8 @@ class DailySalesReportResource extends Resource
 
         DatePicker::make('date')
             ->label('التاريخ')
-            ->required()
-            ->default(Carbon::today()),
+            ->default(Carbon::today())
+            ->required(),
 
         TextInput::make('quantity_sold')
             ->label('عدد البطاقات')
@@ -139,12 +139,12 @@ class DailySalesReportResource extends Resource
     {
         return $table
             ->columns([
-                // TextColumn::make('date')->label('التاريخ')->sortable(),
                 TextColumn::make('seller.name')->label('اسم البائع')->searchable(),
                 TextColumn::make('quantity_sold')->label('عدد البطاقات')->sortable(),
                 TextColumn::make('amount_paid')->label('المبلغ المحصل'),
                 TextColumn::make('notes')->label('الملاحظات')->limit(50),
-                TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime()->sortable(),
+                TextColumn::make('date')->label('تاريخ الإنشاء')->sortable(),
+                // TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime()->sortable(),
             ])
             ->filters([
                 //
