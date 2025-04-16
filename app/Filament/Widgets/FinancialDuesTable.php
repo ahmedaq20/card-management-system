@@ -8,8 +8,9 @@ use Filament\Tables\Table;
 use App\Models\FinancialPayment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Actions\Action;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Tables\Forms\Components\TextInput;
 
 class FinancialDuesTable extends BaseWidget
 {
@@ -33,15 +34,14 @@ class FinancialDuesTable extends BaseWidget
                     ->formatStateUsing(fn ($state) => number_format( ($state ?? 0), 2) . ' ₪'),
 
 
-                    TextColumn::make('payments')
-                    ->label('الدفعات') // Arabic: View Payments
+            ])
+            ->actions([
+                Action::make('عرض الدفعات') // Arabic: View Payments
+                    ->label('الدفعات')    
+                    ->icon('heroicon-s-eye') // Eye icon
+                    ->color('primary') // Primary color for the button
                     ->url(fn (Seller $record) => route('filament.admin.resources.sellers.edit', ['record' => $record->id]) . '#payments') // Redirect to the payments section
-                    ->icon('heroicon-s-eye')
-                    ->color('primary')
-                    ->formatStateUsing(fn ($state) => number_format( ($state ?? 0), 2) . ' ₪')
-                    // Eye icon for the button
-                    ->openUrlInNewTab(),
-
+                    ->openUrlInNewTab(), // Open the link in a new tab
             ]);
     }
 }
