@@ -132,8 +132,7 @@ class SellerResource extends Resource
 
                 TextColumn::make('wholesale_price')
                 ->label('سعر الجملة')
-
-                    ->formatStateUsing(fn ($state) => number_format($state) . ' ₪')
+                ->formatStateUsing(fn ($state) => number_format((float) ($state ?? 0), 2) . ' ₪')
                 ->badge()
                 ->alignCenter()
                 ->color('success'),
@@ -218,19 +217,11 @@ class SellerResource extends Resource
                                     ->label('سعر الجملة')
                                     ->badge()
                                     ->color('info') // Light blue badge for wholesale price
-                                    ->formatStateUsing(fn ($state) => number_format($state ?? 0) . ' ₪'),
-                            ])->columns(3),
+                                    ->formatStateUsing(fn ($state) => number_format( ($state ?? 0), 2) . ' ₪'),
+                                 
+                                   ])->columns(3),
 
-                        // Tab: Wholesale Information
-                        Tab::make('معلومات الجملة') // Arabic: Wholesale Information
-                            ->icon('heroicon-o-shopping-cart') // Icon for Wholesale Information
-                            ->schema([
-                                TextEntry::make('wholesale_price')
-                                    ->label('سعر الجملة')
-                                    ->badge()
-                                    ->color('info') // Light blue badge for wholesale price
-                                    ->formatStateUsing(fn ($state) => number_format($state ?? 0) . ' ₪'),
-                            ]),
+                      
                     ]),
             ]);
     }
