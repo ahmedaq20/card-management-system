@@ -6,6 +6,7 @@ use RouterOS\Query;
 use RouterOS\Client;
 use App\Models\Seller;
 use PHPUnit\Exception;
+use App\Models\DailySales;
 use App\Models\FinancialPayment;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,23 @@ class UserStatsWidget extends BaseWidget
             Log::error('MikroTik connection or query failed: ' . $e->getMessage());
 
           }
+
+        // حساب عدد البطاقات المباعة خلال الشهر الحالي
+          $soldCardsThisMonth = DailySales::whereMonth('date', now()->month) // Current month
+            ->whereYear('created_at', now()->year) // Current year
+            ->sum('quantity_sold');
+
+            // $amountPaidForSoldsThisMonth = DailySales::whereMonth('date', now()->month) // Current month
+            // ->whereYear('date', now()->year) // Current year
+            // ->sum('amount_paid');
+
+            // إضافة الدفعات المالية خلال الشهر الحالي
+            $financialPaymentsThisMonth = FinancialPayment::whereMonth('created_at', now()->month) // Current month
+            ->whereYear('created_at', now()->year) // Current year
+            ->sum('amount');
+
+    // //إجمالي البطاقات المباعة والدفعات المالية
+    //  $totalSoldAndPaymentsThisMonth = $amountPaidForSoldsThisMonth + $financialPaymentsThisMonth;
     
         return [
             // Stat::make('اجمال البائعين', Seller::count())
@@ -54,6 +72,18 @@ class UserStatsWidget extends BaseWidget
             ->chart([100, 250, 300, 500, 700])
             ->color('success'),
 
+            Stat::make('البطاقات المباعة خلال الشهر', $soldCardsThisMonth)
+            ->description('عدد البطاقات المباعة في الشهر الحالي')
+            ->descriptionIcon('heroicon-o-calendar-days', IconPosition::Before)
+            ->chart([40, 30, 10, 5, 3, 1])
+            ->color('info'),
+
+             Stat::make('مبيعات البطاقات خلال الشهر', $financialPaymentsThisMonth)
+            ->description('مجموع مبيعات البطاقات خلال الشهر الحالي ')
+            ->descriptionIcon('heroicon-o-calendar-days', IconPosition::Before)
+            ->chart([40, 30, 10, 5, 3, 1])
+            ->color('primary'),
+
             Stat::make('البطاقات المباعة', Seller::sum('cards_sold'))
             ->description('اجمال البطاقات المباعة في النظام')
             ->descriptionIcon('heroicon-o-calendar-days',IconPosition::Before)
@@ -65,6 +95,8 @@ class UserStatsWidget extends BaseWidget
             ->descriptionIcon('heroicon-o-currency-dollar',IconPosition::Before)
             ->chart([30,16,25,7,3])
             ->color(Color::Sky),
+            
+            
         ];
 
     }
