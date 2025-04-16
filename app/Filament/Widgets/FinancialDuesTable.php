@@ -36,12 +36,25 @@ class FinancialDuesTable extends BaseWidget
 
             ])
             ->actions([
-                Action::make('عرض الدفعات') // Arabic: View Payments
-                    ->label('الدفعات')    
-                    ->icon('heroicon-s-eye') // Eye icon
-                    ->color('primary') // Primary color for the button
-                    ->url(fn (Seller $record) => route('filament.admin.resources.sellers.edit', ['record' => $record->id]) . '#payments') // Redirect to the payments section
-                    ->openUrlInNewTab(), // Open the link in a new tab
-            ]);
+                Action::make('add_payment')
+                    ->label('إضافة دفعة')
+                    ->icon('heroicon-s-plus')
+                    ->color('primary')
+                    ->form([
+                        \Filament\Forms\Components\TextInput::make('amount')
+                            ->label('المبلغ')
+                            ->numeric()
+                            ->required(),
+                        \Filament\Forms\Components\Textarea::make('note')
+                            ->label('ملاحظات'),
+                    ])
+                    ->action(function (array $data, Seller $record) {
+                        \App\Models\FinancialPayment::create([
+                            'seller_id' => $record->id,
+                            'amount' => $data['amount'],
+                            'description' => $data['note'] ?? null,
+                        ]);
+                    })
+                ]);
     }
 }
