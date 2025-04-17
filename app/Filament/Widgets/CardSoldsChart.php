@@ -18,7 +18,7 @@ class CardSoldsChart extends ChartWidget
             ->groupByRaw('DATE(updated_at)') // Use DATE(updated_at) in GROUP BY
             ->orderBy('date')
             ->get();
-            
+
         // Prepare the data (totals)
         $totals = $data->pluck('total_quantity_sold')->toArray();
 
@@ -42,5 +42,12 @@ class CardSoldsChart extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+
+    public static function getColumns(): int | array
+    {
+        return [
+            'default' => 2, // يأخذ كامل عرض الشاشة (صف واحد)
+        ];
     }
 }

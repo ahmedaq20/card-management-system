@@ -44,7 +44,7 @@ class UserStatsWidget extends BaseWidget
 
         // حساب عدد البطاقات المباعة خلال الشهر الحالي
           $soldCardsThisMonth = DailySales::whereMonth('date', now()->month) // Current month
-            ->whereYear('created_at', now()->year) // Current year
+            ->whereYear('date', now()->year) // Current year
             ->sum('quantity_sold');
 
             // $amountPaidForSoldsThisMonth = DailySales::whereMonth('date', now()->month) // Current month
@@ -52,13 +52,13 @@ class UserStatsWidget extends BaseWidget
             // ->sum('amount_paid');
 
             // إضافة الدفعات المالية خلال الشهر الحالي
-            $financialPaymentsThisMonth = FinancialPayment::whereMonth('created_at', now()->month) // Current month
-            ->whereYear('created_at', now()->year) // Current year
+            $financialPaymentsThisMonth = FinancialPayment::whereMonth('date', now()->month) // Current month
+            ->whereYear('date', now()->year) // Current year
             ->sum('amount');
 
     // //إجمالي البطاقات المباعة والدفعات المالية
     //  $totalSoldAndPaymentsThisMonth = $amountPaidForSoldsThisMonth + $financialPaymentsThisMonth;
-    
+
         return [
             // Stat::make('اجمال البائعين', Seller::count())
             //     ->description('عدد البائعين في النظام')
@@ -95,8 +95,8 @@ class UserStatsWidget extends BaseWidget
             ->descriptionIcon('heroicon-o-currency-dollar',IconPosition::Before)
             ->chart([30,16,25,7,3])
             ->color(Color::Sky),
-            
-            
+
+
         ];
 
     }

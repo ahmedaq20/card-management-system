@@ -17,6 +17,7 @@ class MonthlyPaymentsTable extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->poll('10s')
             ->query(
                 FinancialPayment::query()
                     ->selectRaw('
@@ -38,8 +39,15 @@ class MonthlyPaymentsTable extends BaseWidget
                     ->label('إجمالي الدفعات')
                     ->money('ILS'),
             ]);
-            
+
     }
 
-  
+    // public static function getColumns(): int | array
+    // {
+    //     return [
+    //         'default' => 1, // يأخذ كامل عرض الشاشة (صف واحد)
+    //     ];
+    // }
+
+
 }

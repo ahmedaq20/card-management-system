@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use Filament\Facades\Filament;
+use Filament\Widgets\Grid;
+use App\Filament\Widgets\CardSoldsChart;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -19,6 +21,21 @@ class Dashboard extends \Filament\Pages\Dashboard
         return Filament::getWidgets();
     }
 
+    // public function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         Grid::make()
+    //             ->columns(1) // 🟢 يجعلها صف واحد = تأخذ كامل الشاشة
+    //             ->schema([
+    //                 CardSoldsChart::class,
+    //             ]),
+    //     ];
+    // }
+
+    protected function getPollingInterval(): ?string
+    {
+        return '10s'; // Refresh the dashboard every 10 seconds
+    }
 
 
 }

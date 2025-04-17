@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\FinancialPayment;
 
 class DailySales extends Model
 {
@@ -16,5 +17,27 @@ class DailySales extends Model
     public function seller()
     {
         return $this->belongsTo(Seller::class, 'seller_id');
+    }
+
+    protected static function booted()
+    {
+        static::updated(function ($dailySale) {
+            // Check if the amount_paid field was updated
+            if ($dailySale->isDirty('amount_paid') || $dailySale->isDirty('date')) {
+                // Update or create a corresponding record in FinancialPayments
+                FinancialPayment::updateOrCreate(
+                    [
+                        'seller_id' => $dailySale->seller_id,
+                        'date' => $dailySale->date,
+                    ],
+                    [
+                        'amount' => $dailySale->amount_paid,
+                        'date' => $dailySale->date,
+                        'description' =>  $dailySale->notes,
+                    ]
+                   
+                );
+            }
+        });
     }
 }

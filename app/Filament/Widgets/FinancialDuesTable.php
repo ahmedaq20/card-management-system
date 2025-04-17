@@ -5,12 +5,14 @@ namespace App\Filament\Widgets;
 use Filament\Tables;
 use App\Models\Seller;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use App\Models\FinancialPayment;
+use Filament\Tables\Actions\Action;
+use Tables\Forms\Components\TextInput;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Tables\Forms\Components\TextInput;
 
 class FinancialDuesTable extends BaseWidget
 {
@@ -19,6 +21,7 @@ class FinancialDuesTable extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->poll('10s')
             ->query(
                 Seller::query()->orderByDesc('remaining_dues')
             )
@@ -47,14 +50,23 @@ class FinancialDuesTable extends BaseWidget
                             ->required(),
                         \Filament\Forms\Components\Textarea::make('note')
                             ->label('ملاحظات'),
-                    ])
+                            DatePicker::make('date')
+                            ->label('التاريخ') // Arabic: Date
+                            ->default(Carbon::today())
+                            ->required(), //
+          ])
                     ->action(function (array $data, Seller $record) {
                         \App\Models\FinancialPayment::create([
                             'seller_id' => $record->id,
                             'amount' => $data['amount'],
                             'description' => $data['note'] ?? null,
+                            'date' => $data['date'],
+
                         ]);
                     })
                 ]);
     }
+
+   
+
 }

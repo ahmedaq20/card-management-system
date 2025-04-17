@@ -8,9 +8,11 @@ use Filament\Tables;
 use Tables\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -33,12 +35,17 @@ class PaymentsRelationManager extends RelationManager
                 TextInput::make('description')
                     ->label('الوصف')
                     ->maxLength(255),
+                    DatePicker::make('date')
+                    ->label('التاريخ') // Arabic: Date
+                    ->default(Carbon::today())
+                    ->required(), //
             ]);
     }
 
     public function table(Table $table): Table
     {
         return $table
+            ->defaultSort('date', 'desc')
             ->recordTitleAttribute('PaymentsRelationManager')
             ->columns([
 
@@ -65,7 +72,7 @@ class PaymentsRelationManager extends RelationManager
                 TextColumn::make('description')
                     ->label('الوصف')
                     ->formatStateUsing(fn($state) => $state ?? 'لا يوجد وصف'),
-                TextColumn::make('created_at')->label('تاريخ الإضافة')->dateTime(),
+                TextColumn::make('date')->label('تاريخ الإضافة')->dateTime()->sortable(),
             ])
             ->filters([
                 Tables\Filters\Filter::make('all')

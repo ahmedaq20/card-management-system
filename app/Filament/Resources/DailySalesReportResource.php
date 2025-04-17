@@ -43,7 +43,7 @@ class DailySalesReportResource extends Resource
     protected static ?string $navigationLabel = 'كشف المبيعات';
 
     protected static ?string  $breadcrumb = ' المبيعات اليومية';
-    // protected static ?string  $label = 'كشف المبيعات';
+    protected static ?string  $label = 'كشف مبيعات';
     protected static ?string  $pluralLabel = 'كشف  البيعات';
 
     
