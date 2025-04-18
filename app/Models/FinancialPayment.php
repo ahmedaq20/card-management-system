@@ -11,6 +11,7 @@ class FinancialPayment extends Model
     use HasFactory;
 
     protected $fillable = [
+        
         'seller_id',
         'amount',
         'description',
@@ -28,10 +29,44 @@ class FinancialPayment extends Model
     {
         return $this->belongsTo(Seller::class);
     }
-
+    
     public function dailySales()
     {
         return $this->belongsTo(DailySales::class, 'daily_sales_id');
+    }
+
+    // public function FinancialPayments()
+    // {
+    //     return $this->belongsTo(FinancialPayments::class, 'daily_sales_id');
+    // }
+
+    protected static function booted()
+    {
+        static::updated(function ($FinancialPayment) {
+            // Check if the amount_paid field was updated
+            if ($FinancialPayment->isDirty('amount') || $FinancialPayment->isDirty('date') || $FinancialPayment->isDirty('description')) {
+                // Update or create a corresponding record in FinancialPayments
+            
+                $dailySales = DailySales::where('id', $FinancialPayment->daily_sales_id) 
+                ->first(); // جلب أول سجل فقط
+                // If a record exists, update it
+
+                if($dailySales){
+                    $dailySales->update([
+                        'amount_paid' => $FinancialPayment->amount,
+                        'date' => $FinancialPayment->date,
+                        'notes' =>  $FinancialPayment->description,
+                    ]);
+                }
+            }
+        });
+
+        static::deleted(function ($financialPayment) {
+            $dailySales = DailySales::where('id', $financialPayment->daily_sales_id)->first();
+            if ($dailySales) {
+                $dailySales->delete();
+            }
+        });
     }
 
 }

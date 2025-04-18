@@ -16,14 +16,14 @@ class CreateDailySalesReport extends CreateRecord
     {
         // Save the record in the primary table
         $dailySales = DailySales::create($data);
-
+     
         // Save the same record in another table
         FinancialPayment::create([
             'seller_id' => $data['seller_id'],
             'amount' => $data['amount_paid'],
             'with_cards' => 1,
             'description' => $data['notes'],
-            'daily_sales_id' => $data['id'],
+            'daily_sales_id' => $dailySales->id,
         ]);
 
         return $dailySales;
