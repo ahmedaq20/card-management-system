@@ -23,20 +23,19 @@ class DailySales extends Model
     {
         static::updated(function ($dailySale) {
             // Check if the amount_paid field was updated
-            if ($dailySale->isDirty('amount_paid') || $dailySale->isDirty('date')) {
+            if ($dailySale->isDirty('amount_paid') || $dailySale->isDirty('date') || $dailySale->isDirty('notes')) {
                 // Update or create a corresponding record in FinancialPayments
-                FinancialPayment::updateOrCreate(
-                    [
-                        'seller_id' => $dailySale->seller_id,
-                        'date' => $dailySale->date,
-                    ],
-                    [
+            
+                $financialPayment = FinancialPayment::where('daily_sales_id', $dailySale->id) 
+                ->first(); // جلب أول سجل فقط
+                // If a record exists, update it
+                if($financialPayment){
+                    $financialPayment->update([
                         'amount' => $dailySale->amount_paid,
                         'date' => $dailySale->date,
                         'description' =>  $dailySale->notes,
-                    ]
-                   
-                );
+                    ]);
+                }
             }
         });
     }

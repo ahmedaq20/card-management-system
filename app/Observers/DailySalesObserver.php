@@ -44,8 +44,7 @@ class DailySalesObserver
      */
     public function deleted(DailySales $dailySales): void
     {
-        $financialPayment = FinancialPayment::where('seller_id', $dailySales->seller_id)
-        ->where('date', $dailySales->date)
+        $financialPayment = FinancialPayment::where('daily_sales_id', $dailySales->id) // Match the specific DailySales record
         ->first(); // جلب أول سجل فقط
 
     // حذف الدفعة إذا تم العثور عليها

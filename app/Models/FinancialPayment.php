@@ -15,7 +15,8 @@ class FinancialPayment extends Model
         'amount',
         'description',
         'with_cards',
-        'date'
+        'date',
+        'daily_sales_id'
     ];
 
        // Accessor for with_cards attribute
@@ -26,6 +27,11 @@ class FinancialPayment extends Model
     public function seller()
     {
         return $this->belongsTo(Seller::class);
+    }
+
+    public function dailySales()
+    {
+        return $this->belongsTo(DailySales::class, 'daily_sales_id');
     }
 
 }

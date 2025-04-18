@@ -23,6 +23,7 @@ class CreateDailySalesReport extends CreateRecord
             'amount' => $data['amount_paid'],
             'with_cards' => 1,
             'description' => $data['notes'],
+            'daily_sales_id' => $data['id'],
         ]);
 
         return $dailySales;
