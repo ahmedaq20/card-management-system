@@ -56,10 +56,13 @@ class UserStatsWidget extends BaseWidget
             ->whereYear('date', now()->year) // Current year
             ->sum('amount');
 
-    // //إجمالي البطاقات المباعة والدفعات المالية
+
+
+     //إجمالي البطاقات المباعة والدفعات المالية
     //  $totalSoldAndPaymentsThisMonth = $amountPaidForSoldsThisMonth + $financialPaymentsThisMonth;
 
         return [
+        
             // Stat::make('اجمال البائعين', Seller::count())
             //     ->description('عدد البائعين في النظام')
             //     ->descriptionIcon('heroicon-o-user',IconPosition::Before)
