@@ -20,4 +20,18 @@ class MikrotikUser extends Model
         'is_active',
         'comment',
     ];
+
+    public function MikrotikPayment()
+    {
+        return $this->hasMany(MikrotikPayment::class, 'mikrotik_user_id');
+    }
+
+    /**
+     * Calculate the total subscription payment.
+     */
+    // public function totalSubscriptionPayment(): float
+    // {
+        
+    //     return dd($this->MikrotikPayment()->where('mikrotik_user_id',$this->id)->sum('amount'));
+    // }
 }

@@ -19,9 +19,11 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\BooleanColumn;
+use RelationManagers\MikroTikUserRelationManager;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MikroTikUserResource\Pages;
 use App\Filament\Resources\MikroTikUserResource\RelationManagers;
+use App\Filament\Resources\MikrotikPaymentResource\RelationManagers\MikrotikPaymentRelationManager;
 
 class MikroTikUserResource extends Resource
 {
@@ -58,12 +60,14 @@ class MikroTikUserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
+                   
 
                 DatePicker::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->default(now())
                     ->required(),
             ]);
+            
     }
 
     public static function table(Table $table): Table
@@ -99,6 +103,12 @@ class MikroTikUserResource extends Resource
                 TextColumn::make('last_mac')
                     ->label('آخر عنوان MAC'),
 
+                    TextColumn::make('total_subscription_payment')
+                    ->label('إجمالي المدفوعات')
+                    ->alignCenter()
+                    ->getStateUsing(function ($record) {
+                    return number_format($record->MikrotikPayment()->where('mikrotik_user_id',$record->id)->sum('amount')) . ' ₪';
+                }),                                     
                 TextColumn::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->date(),
@@ -111,6 +121,7 @@ class MikroTikUserResource extends Resource
                 TextColumn::make('comment')
                     ->label('تعليق')
                     ->wrap(),
+                    
             ])
             ->defaultSort('date_of_subscription', 'desc')
             ->actions([
@@ -158,7 +169,9 @@ class MikroTikUserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            MikrotikPaymentRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
