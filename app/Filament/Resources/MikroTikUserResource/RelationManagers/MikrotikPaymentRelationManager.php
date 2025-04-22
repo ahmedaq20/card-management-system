@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class MikrotikPaymentRelationManager extends RelationManager
 {
     protected static string $relationship = 'MikrotikPayment';
-    // protected static ?string $recordTitleAttribute = 'description';
+     protected static ?string $recordTitleAttribute = 'description';
     protected static ?string $label = 'مدفوعات مستخدم ميكروتك';
     protected static ?string $pluralLabel = 'مدفوعات مستخدم ميكروتك';
 

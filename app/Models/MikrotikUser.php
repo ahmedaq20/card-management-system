@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -31,7 +32,18 @@ class MikrotikUser extends Model
      */
     // public function totalSubscriptionPayment(): float
     // {
-        
+
     //     return dd($this->MikrotikPayment()->where('mikrotik_user_id',$this->id)->sum('amount'));
     // }
+
+    public function getSubscriptionStatusAttribute(): string
+    {
+        if (!$this->date_of_subscription) {
+            return 'inactive';
+        }
+
+        $expiryDate = Carbon::parse($this->date_of_subscription)->addMonth();
+
+        return $expiryDate->isFuture() ? 1 : 0 ;
+    }
 }

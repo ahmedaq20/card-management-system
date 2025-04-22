@@ -60,14 +60,14 @@ class MikroTikUserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
-                   
+
 
                 DatePicker::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->default(now())
                     ->required(),
             ]);
-            
+
     }
 
     public static function table(Table $table): Table
@@ -108,10 +108,15 @@ class MikroTikUserResource extends Resource
                     ->alignCenter()
                     ->getStateUsing(function ($record) {
                     return number_format($record->MikrotikPayment()->where('mikrotik_user_id',$record->id)->sum('amount')) . ' ₪';
-                }),                                     
+                }),
                 TextColumn::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->date(),
+
+                    BooleanColumn::make('subscription_status')
+                    ->label('حالة الاشتراك')
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle'),
 
                 BooleanColumn::make('is_active')
                     ->label('نشط الآن')
@@ -121,7 +126,7 @@ class MikroTikUserResource extends Resource
                 TextColumn::make('comment')
                     ->label('تعليق')
                     ->wrap(),
-                    
+
             ])
             ->defaultSort('date_of_subscription', 'desc')
             ->actions([
@@ -134,37 +139,37 @@ class MikroTikUserResource extends Resource
                 ->action(function (MikroTikUser $record) {
                     try {
                         static::fetchFromApi($record); // Call the method to fetch data from the API
-                      
-            
+
+
                        Notification::make()
                         ->title('تم تحديث البيانات بنجاح')
                         ->success()
-                        ->send();  
-                        
+                        ->send();
+
 
                        } catch (\Exception $e) {
                            Notification::make()
                             ->title('فشل في تحديث البيانات')
                             ->body($e->getMessage())
                             ->danger()
-                            ->send();             
-                        
+                            ->send();
+
                         }
                 })
                 // ->requiresConfirmation()
                 // ->color('success')
                 // ->modalHeading('تحديث بيانات المستخدم')
             ])
-            
 
-           
+
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                   
+
             ])
         ]);
-    
+
     }
 
     public static function getRelations(): array
@@ -208,7 +213,7 @@ class MikroTikUserResource extends Resource
                     'last_mac' => $userData['mac-address'] ?? null,
                     'is_active' => true,
                     'comment' => 'المستخدم نشط في الشبكة',
-                    'user_in_network' => $record->user_in_network ?? null,    
+                    'user_in_network' => $record->user_in_network ?? null,
                 ]);
             } else {
                 // Mark the user as inactive if not found in the API
