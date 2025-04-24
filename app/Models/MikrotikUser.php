@@ -48,10 +48,10 @@ class MikrotikUser extends Model
             $model->end_date_of_subscription = \Carbon\Carbon::parse($model->date_of_subscription)->addDays(30);
         });
 
-        static::updating(function ($model) {
-            $model->start_date_of_subscription = $model->date_of_subscription;
-            $model->end_date_of_subscription = \Carbon\Carbon::parse($model->date_of_subscription)->addDays(30);
-        });
+        // static::updating(function ($model) {
+        //     $model->start_date_of_subscription = $model->date_of_subscription;
+        //     $model->end_date_of_subscription = \Carbon\Carbon::parse($model->date_of_subscription)->addDays(30);
+        // });
     }
 
     public function getSubscriptionStatusAttribute(): string
