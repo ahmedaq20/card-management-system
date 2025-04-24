@@ -10,6 +10,7 @@ use RouterOS\Client;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\MikroTikUser;
+use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -61,11 +62,11 @@ class MikroTikUserResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-
-                DatePicker::make('date_of_subscription')
+                    DatePicker::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->default(now())
                     ->required(),
+                  
             ]);
 
     }
@@ -112,6 +113,12 @@ class MikroTikUserResource extends Resource
                 TextColumn::make('date_of_subscription')
                     ->label('تاريخ الاشتراك')
                     ->date(),
+                    TextColumn::make('start_date_of_subscription')
+                    ->label('بداية الاشتراك')
+                    ->date(),
+                    TextColumn::make('end_date_of_subscription')
+                    ->label('نهاية الاشتراك')
+                    ->date(),
 
                     BooleanColumn::make('subscription_status')
                     ->label('حالة الاشتراك')
@@ -155,7 +162,26 @@ class MikroTikUserResource extends Resource
                             ->send();
 
                         }
-                })
+                }),
+
+                Action::make('renew_subscription')
+                ->label('تجديد الاشتراك')
+                ->icon('heroicon-o-calendar-days')
+                ->color('primary')
+                ->action(function (MikroTikUser $record) {
+                        
+                    $record->update([
+                        'start_date_of_subscription' => Carbon::now(),
+                        'end_date_of_subscription' =>  Carbon::now()->addDays(30),
+                    ]);
+
+                    // dd($record); 
+
+                    Notification::make()
+                        ->title('تم تجديد الاشتراك بنجاح')
+                        ->success()
+                        ->send();
+                }),
                 // ->requiresConfirmation()
                 // ->color('success')
                 // ->modalHeading('تحديث بيانات المستخدم')
