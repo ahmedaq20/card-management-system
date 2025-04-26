@@ -66,7 +66,7 @@ class MikroTikUserResource extends Resource
                     ->label('تاريخ الاشتراك')
                     ->default(now())
                     ->required(),
-                  
+
             ]);
 
     }
@@ -169,13 +169,14 @@ class MikroTikUserResource extends Resource
                 ->icon('heroicon-o-calendar-days')
                 ->color('primary')
                 ->action(function (MikroTikUser $record) {
-                        
+
                     $record->update([
                         'start_date_of_subscription' => Carbon::now(),
                         'end_date_of_subscription' =>  Carbon::now()->addDays(30),
                     ]);
 
-                    // dd($record); 
+                  //  dd($record->start_date_of_subscription, $record->end_date_of_subscription);
+
 
                     Notification::make()
                         ->title('تم تجديد الاشتراك بنجاح')
