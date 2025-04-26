@@ -10,7 +10,7 @@ use App\Filament\Widgets\CardSoldsChart;
 class Dashboard extends \Filament\Pages\Dashboard
 {
     protected static ?string $navigationGroup = 'لوحة التحكم';
-    protected static ?int $navigationSort = -2;
+    protected static ?int $navigationSort = 1;
     protected static ?string $title = 'لوحة التحكم';
     protected static ?string $slug = 'dashboard';
     protected static ?string $navigationLabel = 'لوحة التحكم';

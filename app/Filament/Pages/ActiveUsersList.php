@@ -15,6 +15,8 @@ class ActiveUsersList extends Page
      protected static ?string $navigationLabel = 'قائمة المستخدمين النشطين';
     //  protected static ?string $title='s';
     protected static string $view = 'filament.pages.active-users-list';
+    protected static ?int $navigationSort = 4;
+
 
     public $activeUsers = [];
     public string $search = '';

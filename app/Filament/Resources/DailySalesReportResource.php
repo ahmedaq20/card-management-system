@@ -46,6 +46,9 @@ class DailySalesReportResource extends Resource
     protected static ?string  $label = 'كشف مبيعات';
     protected static ?string  $pluralLabel = 'كشف  البيعات';
 
+    protected static ?int $navigationSort = 2;
+
+
     
     
     public static function form(Form $form): Form

@@ -18,6 +18,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\BooleanColumn;
 use RelationManagers\MikroTikUserRelationManager;
@@ -35,6 +36,7 @@ class MikroTikUserResource extends Resource
     protected static ?string $navigationGroup = 'إدارة الشبكة';
     protected static ?string $label = 'مستخدم ميكروتك';
     protected static ?string $pluralLabel = 'مستخدمون ميكروتك';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -136,33 +138,71 @@ class MikroTikUserResource extends Resource
 
             ])
             ->defaultSort('date_of_subscription', 'desc')
+            ->headerActions([
+            //  CreateAction::make()
+            //         ->label('إنشاء مستخدم جديد'),
+                
+                Action::make(name: 'refresh_all')
+                    ->label('تحديث جميع البيانات من Mikrotik')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('success')
+                    ->action(function (Action $action) {
+                        try {
+                            $users = MikroTikUser::all();
+                            $successCount = 0;
+                            $errorCount = 0;
+                          
+                            foreach ($users as $user) {
+                                try {
+                                    static::fetchFromApi($user);
+                                    $successCount++;
+                                } catch (\Exception $e) {
+                                    $errorCount++;
+                                }
+                            }
+                            
+                            Notification::make()
+                                ->title('تم تحديث البيانات')
+                                ->body("تم تحديث {$successCount} مستخدم بنجاح")
+                                ->success()
+                                ->send();
+                                
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('خطأ في التحديث')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                Action::make('Fetch from API')
-                ->label('تحديث')
-                ->icon('heroicon-o-arrow-path')
-                ->color('success')
-                ->action(function (MikroTikUser $record) {
-                    try {
-                        static::fetchFromApi($record); // Call the method to fetch data from the API
+                // Action::make('Fetch from API')
+                // ->label('تحديث')
+                // ->icon('heroicon-o-arrow-path')
+                // ->color('success')
+                // ->action(function (MikroTikUser $record) {
+                //     try {
+                //         static::fetchFromApi($record); // Call the method to fetch data from the API
 
 
-                       Notification::make()
-                        ->title('تم تحديث البيانات بنجاح')
-                        ->success()
-                        ->send();
+                //        Notification::make()
+                //         ->title('تم تحديث البيانات بنجاح')
+                //         ->success()
+                //         ->send();
 
 
-                       } catch (\Exception $e) {
-                           Notification::make()
-                            ->title('فشل في تحديث البيانات')
-                            ->body($e->getMessage())
-                            ->danger()
-                            ->send();
+                //        } catch (\Exception $e) {
+                //            Notification::make()
+                //             ->title('فشل في تحديث البيانات')
+                //             ->body($e->getMessage())
+                //             ->danger()
+                //             ->send();
 
-                        }
-                }),
+                //         }
+                // }),
 
                 Action::make('renew_subscription')
                 ->label('تجديد الاشتراك')
