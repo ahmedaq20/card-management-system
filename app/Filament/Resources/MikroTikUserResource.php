@@ -29,7 +29,7 @@ use App\Filament\Resources\MikrotikPaymentResource\RelationManagers\MikrotikPaym
 
 class MikroTikUserResource extends Resource
 {
-    protected static ?string $model = MikroTikUser::class;
+    protected static ?string $model = App\Models\MikroTikUser::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
     protected static ?string $navigationLabel = 'مستخدمو MikroTik';
@@ -141,7 +141,7 @@ class MikroTikUserResource extends Resource
             ->headerActions([
             //  CreateAction::make()
             //         ->label('إنشاء مستخدم جديد'),
-                
+
                 Action::make(name: 'refresh_all')
                     ->label('تحديث جميع البيانات من Mikrotik')
                     ->icon('heroicon-o-arrow-path')
@@ -151,7 +151,7 @@ class MikroTikUserResource extends Resource
                             $users = MikroTikUser::all();
                             $successCount = 0;
                             $errorCount = 0;
-                          
+
                             foreach ($users as $user) {
                                 try {
                                     static::fetchFromApi($user);
@@ -160,13 +160,13 @@ class MikroTikUserResource extends Resource
                                     $errorCount++;
                                 }
                             }
-                            
+
                             Notification::make()
                                 ->title('تم تحديث البيانات')
                                 ->body("تم تحديث {$successCount} مستخدم بنجاح")
                                 ->success()
                                 ->send();
-                                
+
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->title('خطأ في التحديث')
