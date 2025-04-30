@@ -4,10 +4,10 @@ namespace App\Filament\Resources\MikroTikUserResource\Pages;
 
 use RouterOS\Query;
 use RouterOS\Client;
-use App\Models\MikroTikUser;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\MikroTikUserResource;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MikroTikUser;
 
 class CreateMikroTikUser extends CreateRecord
 {
@@ -19,7 +19,7 @@ class CreateMikroTikUser extends CreateRecord
     }
 
 
-    protected function handleRecordCreation(array $data): Model
+    protected function handleRecordCreation(array $data):Model
     {
         try {
             // Connect to MikroTik API
