@@ -21,6 +21,8 @@ class CreateMikroTikUser extends CreateRecord
 
     protected function handleRecordCreation(array $data):Model
     {
+
+       $mikrotikUser = MikroTikUser::create($data);
         try {
             // Connect to MikroTik API
             $client = new Client([
@@ -56,6 +58,6 @@ class CreateMikroTikUser extends CreateRecord
         }
 
         // Create the user record in the database
-        return MikroTikUser::create($data);
+        return $mikrotikUser;
     }
 }
