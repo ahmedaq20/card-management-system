@@ -18,6 +18,7 @@ class CreateMikroTikUser extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    
 
     protected function handleRecordCreation(array $data):Model
     {

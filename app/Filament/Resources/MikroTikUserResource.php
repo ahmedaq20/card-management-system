@@ -30,7 +30,7 @@ use App\Filament\Resources\MikrotikPaymentResource\RelationManagers\MikrotikPaym
 class MikroTikUserResource extends Resource
 {
 
-    protected static ?string $model = App\Models\MikroTikUser::class;
+    protected static ?string $model = MikroTikUser::class;
     protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
     protected static ?string $navigationLabel = 'مستخدمو MikroTik';
     protected static ?string $navigationGroup = 'إدارة الشبكة';
