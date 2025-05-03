@@ -18,12 +18,11 @@ class CreateMikroTikUser extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
-    
-
-    protected function handleRecordCreation(array $data):Model
+    protected function handleRecordCreation(array $data): Model
     {
+        // Create the user record in the database
+        $mikrotikUser = MikroTikUser::create($data);
 
-       $mikrotikUser = MikroTikUser::create($data);
         try {
             // Connect to MikroTik API
             $client = new Client([
@@ -39,26 +38,30 @@ class CreateMikroTikUser extends CreateRecord
 
             // Find the user in the API response
             $userData = collect($activeUsers)->firstWhere('user', $data['user_in_network']);
-    //      dd($userData); // Debugging line to check the user data
 
             if ($userData) {
-                // Update the data array with API information
-                $data['last_ip_address'] = $userData['address'] ?? null;
-                $data['last_mac'] = $userData['mac-address'] ?? null;
-                $data['is_active'] = true;
-                $data['comment'] = $userData['comment'] ?? 'لا يوجد ملاحظات';
+                // Update the MikroTikUser record with API information
+                $mikrotikUser->update([
+                    'last_ip_address' => $userData['address'] ?? null,
+                    'last_mac' => $userData['mac-address'] ?? null,
+                    'is_active' => true,
+                    'comment' => $userData['comment'] ?? 'لا يوجد ملاحظات',
+                ]);
             } else {
                 // Mark the user as inactive if not found in the API
-                $data['is_active'] = false;
-                $data['comment'] = 'المستخدم غير نشط في الشبكة';
+                $mikrotikUser->update([
+                    'is_active' => false,
+                    'comment' => 'المستخدم غير نشط في الشبكة',
+                ]);
             }
         } catch (\Throwable $e) {
-            // Handle API connection errors
-            $data['is_active'] = false;
-            $data['comment'] = 'فشل في الاتصال بـ MikroTik: ' . $e->getMessage();
+            // Handle API connection errors and update the record
+            $mikrotikUser->update([
+                'is_active' => false,
+                'comment' => 'فشل في الاتصال بـ MikroTik: ' . $e->getMessage(),
+            ]);
         }
 
-        // Create the user record in the database
         return $mikrotikUser;
     }
 }
