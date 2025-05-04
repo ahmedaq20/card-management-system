@@ -7,8 +7,7 @@ use Filament\Forms;
 use RouterOS\Query;
 use Filament\Tables;
 use RouterOS\Client;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
+    use Filament\Tables\Table;
 use App\Models\MikroTikUser;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
@@ -18,13 +17,8 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Actions\CreateAction;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\BooleanColumn;
-use RelationManagers\MikroTikUserRelationManager;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MikroTikUserResource\Pages;
-use App\Filament\Resources\MikroTikUserResource\RelationManagers;
 use App\Filament\Resources\MikrotikPaymentResource\RelationManagers\MikrotikPaymentRelationManager;
 
 class MikroTikUserResource extends Resource
@@ -232,7 +226,7 @@ class MikroTikUserResource extends Resource
 
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                  Tables\Actions\DeleteBulkAction::make(),
 
             ])
         ]);

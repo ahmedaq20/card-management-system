@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class MikrotikUser extends Model
 {
     use HasFactory;
-
+    protected $table ='mikrotik_users';
     protected $fillable = [
         'username',
         'phone',
